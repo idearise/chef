@@ -24,6 +24,8 @@ require 'json'
 
 # Load constants from rake config file.
 require File.join(File.dirname(__FILE__), 'config', 'rake')
+require File.join(File.dirname(__FILE__), 'config', 'dev')
+
 
 # Detect the version control system and assign to $vcs. Used by the update
 # task in chef_repo.rake (below). The install task calls update, so this

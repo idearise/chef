@@ -1,0 +1,12 @@
+{
+	"id":"deploy",
+	"comment":"the deployer", 
+	"gid": 1005, 
+	"uid": 1005, 
+	"shell":"/bin/bash",
+	"password" : "$1$7P.kjT3v$.9q1orOo1Ul7BgRazYegp/",
+	"authorized_keys" : { 
+		"stephen" : "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAxRvuBonwQVMJDw5ve+Xx/IsBKiuKsSCJ9m9GNNHxKDdca6yVmGbaSumVbNVooiZI6/0Kxd7uNDhX9+YeRqhaqNnNVgYOe56AkLth0EqpdwneEYquiETQ3+/aNRnk2vIWXx34mCiqFmxVo//sbEMllPKjxpSLuZqrZzmxd8S+gMVO+aU9h+rA6Zd8aYiLuKqnhv5qlOPfZkouhfHsKocwYb0NL1wQNGHV4P0EkB6zSguzJ36bghy6oHr4vAaX+GjEeWFAULJGK1zUKacxFgWaV7BMfmx5xDQym9qkAGCf5n9ZAsQDVTSgub3GYcXuYqhjMtw2dzJJbMtzIO8UlgZ5Xw== devpopol@Stephen-Paul-Suarezs-MacBook.local", 
+		"devpod": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdh3G6hmFikWISIkABNVULLBx5iIGL4CCMSO/e9LdZa+8CWo65rg/M0rmqi9mMVX3fQztBqoT6F8D/mc+y/U6yBKhAafPLsd1OHCh58AS9ZcgrEoxia6tik0syD2qyUa+yVuvU+M8DfEvgzG5+B4nxbHvKImlsMq+s7mXc7hBhptlxerI7DK19cVc5hWX3BFT7aOcKNJhyHC0BlNoGGWcgAhiPwOlU4Kuq0J8kAaPG1WnMyib7XswNgsnAHunVZ0ugEvnmGw9mPq4NYR6uoTV+J6+G1cCX8hRAkUk6uQ9Tgkc1jHixK7eoVhRTBZkglLT+99oWDcsaO5p4uppjnHvD devpopol@devpopol.local"
+	}
+}

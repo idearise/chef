@@ -1,0 +1,13 @@
+{
+	"id": "list",
+	"alias": {
+		"dev_env": "li413-17.members.linode.com"
+	},
+	"li413-17.members.linode.com": {
+		"fqdn": "li413-17.members.linode.com",
+		"public_ip": "106.187.93.17",
+		"private_ip": "192.168.181.204",
+		"subnet_mask": "255.255.128.0",
+		"default_gateway": "106.187.93.1"
+	}
+}
