@@ -1,0 +1,104 @@
+bash -c '
+<%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+
+if [ ! -f /usr/bin/chef-client ]; then
+  #make the time correct
+  yum install ntp -y
+  chkconfig ntpd on
+  ntpdate pool.ntp.org
+  /etc/init.d/ntpd start
+
+  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm
+  rpm -Uvh epel-release-5-4.noarch.rpm
+  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://rpm.aegisco.com/aegisco/rhel/aegisco-rhel.rpm
+  rpm -Uvh aegisco-rhel.rpm
+
+  #added here so that git will be available as a package
+  #http://wiki.centos.org/AdditionalResources/Repositories/RPMForge
+  rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt
+  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://packages.sw.be/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
+  rpm -ivh rpmforge-release-0.5.2-2.el5.rf.*.rpm
+
+  #prepare "Development Tools" and ruby deps
+  <% basic_deps = %w[gcc gcc-c++ automake autoconf make] %>
+  <% ruby_deps = %w[zlib zlib-devel ncurses ncurses-devel readline readline-devel openssl-devel libxml2 libxml2-devel libxslt libxslt-devel] %>
+  yum install -y <%= (basic_deps + ruby_deps).join(" ")%>
+
+  #required by ruby 1.9.3  
+  cd /usr/local/src
+  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://pyyaml.org/download/libyaml/yaml-0.1.4.tar.gz
+  tar xzvf yaml-0.1.4.tar.gz
+  cd yaml-0.1.4
+  ./configure --prefix=/usr/local
+  make
+  make install
+
+  #install ruby
+  cd /usr/local/src
+  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p125.tar.gz
+  tar xvzf ruby-1.9.3-p125.tar.gz
+  cd ruby-1.9.3-p125
+  ./configure && make && make install
+  
+  #install rubygems
+  cd /usr/local/src
+  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://production.cf.rubygems.org/rubygems/rubygems-1.8.21.tgz
+  tar xvzf rubygems-1.8.21.tgz
+  cd rubygems-1.8.21
+  ruby setup.rb --no-format-executable
+
+  echo "gem: --no-ri --no-rdoc" > /root/.gemrc
+
+fi
+
+gem update --system
+gem update
+gem install ohai --no-rdoc --no-ri --verbose
+gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string %>
+
+mkdir -p /etc/chef
+#check if the user setting this up has a public key, upload it as well
+<% if (path = File.expand_path("~") + "/.ssh/id_rsa.pub") and  File.exist?(path) %>
+mkdir -p ~/.ssh
+(
+cat <<'EOP'
+<%= File.read(path)%> 
+EOP
+) > ~/.ssh/authorized_keys
+<% end %>
+
+(
+cat <<'EOP'
+<%= validation_key %>
+EOP
+) > /tmp/validation.pem
+awk NF /tmp/validation.pem > /etc/chef/validation.pem
+rm /tmp/validation.pem
+
+<% if @chef_config[:encrypted_data_bag_secret] -%>
+(
+cat <<'EOP'
+<%= encrypted_data_bag_secret %>
+EOP
+) > /tmp/encrypted_data_bag_secret
+awk NF /tmp/encrypted_data_bag_secret > /etc/chef/encrypted_data_bag_secret
+rm /tmp/encrypted_data_bag_secret
+<% end -%>
+
+(
+cat <<'EOP'
+<%= config_content %>
+EOP
+) > /etc/chef/client.rb
+
+(
+cat <<'EOP'
+<%= { "run_list" => @run_list }.to_json %>
+EOP
+) > /etc/chef/first-boot.json
+
+if [ -f /usr/bin/chef-client ]; then
+  rm -f /usr/bin/chef-client
+fi
+ln -nfs $(which chef-client) /usr/bin/chef-client
+<%= start_chef %>'
