@@ -39,14 +39,14 @@ SyslogFacility AUTHPRIV
 # Authentication:
 
 #LoginGraceTime 2m
-PermitRootLogin no
+#PermitRootLogin yes
 #StrictModes yes
 #MaxAuthTries 6
 #MaxSessions 10
 
 #RSAAuthentication yes
-PubkeyAuthentication yes
-AuthorizedKeysFile	.ssh/authorized_keys
+#PubkeyAuthentication yes
+#AuthorizedKeysFile	.ssh/authorized_keys
 #AuthorizedKeysCommand none
 #AuthorizedKeysCommandRunAs nobody
 
@@ -61,9 +61,9 @@ AuthorizedKeysFile	.ssh/authorized_keys
 #IgnoreRhosts yes
 
 # To disable tunneled clear text passwords, change to no here!
-PasswordAuthentication no
-PermitEmptyPasswords no
 #PasswordAuthentication yes
+#PermitEmptyPasswords no
+PasswordAuthentication yes
 
 # Change to no to disable s/key passwords
 #ChallengeResponseAuthentication yes
