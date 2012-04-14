@@ -12,5 +12,6 @@ run_list *[
   'recipe[rbenv]',
   'recipe[redis]','recipe[redis-configuration]',
   'recipe[postgresql]',
+  'recipe[sqlite]',
   'recipe[users-configuration]'
 ]
