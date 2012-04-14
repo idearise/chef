@@ -16,6 +16,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
+
 gem_package "ruby-shadow"
 #require_recipe "mysql_cluster"
 item = data_bag_item 'users', 'deploy'
@@ -120,11 +123,21 @@ template "/root/.gemrc" do
   #we probably always want to regenerate this everytime chef-client runs ?
   #not_if "test -f /root/.gemrc"
 end
-template "/etc/ssh/sshd_config" do
-  source "gemrc.erb"
-  action :create
-  owner "root"
-  group "root"
-  mode 0770
-  not_if "/etc/ssh/sshd_config"
+
+cookbook_file "/etc/ssh/sshd_config" do
+  source "sshd_config"
+  mode "700"
+  not_if "test -f /etc/chef/env/sshd_config_secured"
+end
+
+service "ssh" do
+  action :restart
+  not_if "test -f /etc/chef/env/sshd_config_secured"
+end
+
+execute "flag the restart of ssh after sshd_config reconfiguration" do
+  cwd '/etc/chef/env'
+  command "touch sshd_config_secured"
+  creates "/etc/chef/env/sshd_config_secured"
+  action :run
 end

@@ -57,6 +57,7 @@ gem install ohai --no-rdoc --no-ri --verbose
 gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string %>
 
 mkdir -p /etc/chef
+mkdir -p /etc/chef/env
 #check if the user setting this up has a public key, upload it as well
 <% if (path = File.expand_path("~") + "/.ssh/id_rsa.pub") and  File.exist?(path) %>
 mkdir -p ~/.ssh
