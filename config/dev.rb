@@ -16,7 +16,8 @@ namespace :linode do
   
   desc "login to #{dev_env}"
   task :login do
-    system("ssh root@#{dev_env}")
+    user = ENV['USER'] || 'root'
+    system("ssh #{user}@#{dev_env}")
   end
   
   task :assign_role do

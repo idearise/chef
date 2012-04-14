@@ -1,0 +1,29 @@
+#!/bin/sh
+# chkconfig: - 80 12
+# description: redis-server - Persistent key-value db
+# processname: redis-server
+
+DAEMON=<%= `which redis-server`.strip%>
+DAEMON_ARGS=/etc/redis.conf
+NAME=redis-server
+DESC=redis-server
+PIDFILE=/var/run/redis.pid
+
+test -x $DAEMON || exit 0
+test -x $DAEMONBOOTSTRAP || exit 0
+
+set -e
+
+case "$1" in
+  start)
+        echo -n "Starting $DESC: "
+        touch $PIDFILE
+        chown redis:redis $PIDFILE
+        $DAEMON $DAEMON_ARGS 
+        ;;
+  stop)
+        echo -n "Stopping $DESC: "
+        killall $NAME
+        rm -f $PIDFILE
+        ;;
+esac

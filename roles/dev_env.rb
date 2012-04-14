@@ -7,4 +7,7 @@ run_list 'recipe[git]',
   'recipe[memcached]','recipe[memcached-configuration]',
   'recipe[node.js]',
   'recipe[passenger]',
+  'recipe[rbenv]',
+  'recipe[redis]','recipe[redis-configuration]',
+  'recipe[postgresql]'
   'recipe[users-configuration]'
