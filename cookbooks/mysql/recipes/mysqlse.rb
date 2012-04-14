@@ -18,7 +18,8 @@
 #
 #the version that has Mysql Sphinx Engine 
 package 'cmake'
-
+package "patch"
+package "bison"
 
 sph_src_dir = node[:mysql][:sphinx][:src_dir]
 sph_base = node[:mysql][:sphinx][:base]
@@ -68,16 +69,53 @@ directory p do
 end
 
 execute "cp msyqlse engine sources to msyql storage plugin directory" do
-  command %(cp -R #{sph_src_dir + '/' + sph_base}/mysqlse/*.* #{p})
+  #cp -R -p $SPHX/mysqlse $MYSQL/storage/sphinx
+  command %(cp -R -p #{sph_src_dir + '/' + sph_base}/mysqlse #{p})
   not_if { Dir["#{p}/*"].size > 0 }
+end
+
+#apply the patch for 2.0.4
+#ref: http://sphinxsearch.com/forum/view.html?id=8982
+#ref: http://sphinxsearch.com/bugs/view.php?id=1090
+cookbook_file "#{p}/snippets_udf.cc.patch" do
+  source "snippets_udf.cc.patch"
+  mode "775"
+  owner 'root'
+  group 'root'
+  not_if "test -f #{p}/snippets_udf.cc.patch"
+end
+
+script "execute snippets_udf patch" do
+  interpreter "bash"
+  user "root"
+  cwd "/root"
+  code <<-BASH
+  patch -p1 < #{p}/snippets_udf.cc.patch #{p}/snippets_udf.cc
+  touch /etc/chef/env/sphinx_snippets_udf_patched
+  BASH
+  not_if "test -f /etc/chef/env/sphinx_snippets_udf_patched"
 end
 
 script "install mysql source code" do
   interpreter "bash"
   user "root"
   cwd src_dir + "/" + base
+=begin
+cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
+-DMYSQL_UNIX_ADDR=/tmp/mysql.sock \
+-DDEFAULT_CHARSET=utf8 \
+-DDEFAULT_COLLATION=utf8_general_ci \
+-DWITH_EXTRA_CHARSETS:STRING=utf8 \
+-DWITH_MYISAM_STORAGE_ENGINE=1 \
+-DWITH_INNOBASE_STORAGE_ENGINE=1 \
+-DWITH_MEMORY_STORAGE_ENGINE=1 \
+-DWITH_READLINE=1 \
+-DENABLED_LOCAL_INFILE=1 \
+-DWITH_SPHINX_STORAGE_ENGINE=1 -DWITH_EMBEDDED_SERVER=1
+=end
   code <<-BASH
-  cmake -DCMAKE_INSTALL_PREFIX=#{target} \
+  sh BUILD/autorun.sh
+  cmake . -DCMAKE_INSTALL_PREFIX=#{target} \
   -DMYSQL_UNIX_ADDR=/tmp/mysql.sock \
   -DDEFAULT_CHARSET=utf8 \
   -DDEFAULT_COLLATION=utf8_general_ci \
@@ -88,8 +126,8 @@ script "install mysql source code" do
   -DWITH_READLINE=1 \
   -DENABLED_LOCAL_INFILE=1 \
   -DWITH_SPHINX_STORAGE_ENGINE=1 -DWITH_EMBEDDED_SERVER=1
-  make
   make install
+  
   BASH
   not_if { File.exist?(target) }
 end
