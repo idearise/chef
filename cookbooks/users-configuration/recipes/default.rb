@@ -84,7 +84,8 @@ template "/root/.bash_profile" do
   group 'root'
   variables(:paths => paths)
   mode 0770
-  only_if "test -d #{mysql_bin}"
+  #we probably always want to regenerate this everytime chef-client runs ?
+  #only_if "test -d #{mysql_bin}"
 end
 
 template "/home/#{item['id']}/.bash_profile" do
@@ -94,7 +95,8 @@ template "/home/#{item['id']}/.bash_profile" do
   group item.id
   variables(:paths => paths)
   mode 0770
-  only_if "test -d #{mysql_bin}"
+  #we probably always want to regenerate this everytime chef-client runs ?
+  #only_if "test -d #{mysql_bin}"
 end
 
 template "/home/#{item['id']}/.gemrc" do
@@ -104,7 +106,8 @@ template "/home/#{item['id']}/.gemrc" do
   group item.id
   variables(:paths => paths)
   mode 0770
-  not_if "test -f /home/#{item['id']}/.gemrc"
+  #we probably always want to regenerate this everytime chef-client runs ?
+  #not_if "test -f /home/#{item['id']}/.gemrc"
 end
 
 template "/root/.gemrc" do
@@ -114,5 +117,14 @@ template "/root/.gemrc" do
   group "root"
   variables(:paths => paths)
   mode 0770
-  not_if "test -f /root/.gemrc"
+  #we probably always want to regenerate this everytime chef-client runs ?
+  #not_if "test -f /root/.gemrc"
+end
+template "/etc/ssh/sshd_config" do
+  source "gemrc.erb"
+  action :create
+  owner "root"
+  group "root"
+  mode 0770
+  not_if "/etc/ssh/sshd_config"
 end
