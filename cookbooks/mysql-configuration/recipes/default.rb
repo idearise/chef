@@ -74,7 +74,7 @@ template '/etc/my.cnf' do
   not_if "test -f /etc/chef/env/my_cnf_installed"
 end
 
-execute "flag the restart of ssh after sshd_config reconfiguration" do
+execute "flag the installation of my.cnf" do
   cwd '/etc/chef/env'
   command "touch my_cnf_installed"
   creates "/etc/chef/env/my_cnf_installed"
@@ -85,7 +85,8 @@ execute "mysql_install_db" do
   cwd target
   user 'mysql'
   group 'mysql'
-  command "scripts/mysql_install_db --datadir=#{path_generator.()}" 
+  #command "scripts/mysql_install_db --datadir=#{path_generator.()}" 
+  command "bin/mysql_install_db --datadir=#{path_generator.()}" 
   creates path_generator.('mysql')
 end
 

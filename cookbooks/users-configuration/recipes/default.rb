@@ -76,9 +76,9 @@ end
 
 mysql_bin = '/usr/local/mysql/bin'#[node[:mysql][:target], 'bin'].join('/')
 paths = {}
-if File.exist?(mysql_bin)
+#if File.exist?(mysql_bin)
   paths.update({:mysql => mysql_bin})
-end
+#end
 
 template "/root/.bash_profile" do
   source "bash_profile.erb"
