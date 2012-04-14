@@ -28,7 +28,7 @@
     group user
     action :sync
   end
-
+  
   #echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
   directory "#{path}/.rbenv/plugins" do
     owner user
@@ -42,6 +42,16 @@
     user user
     group user
     destination "#{path}/.rbenv/plugins/ruby-build"
+    action :sync
+  end
+  
+  #git clone git://github.com/jamis/rbenv-gemset.git
+  git "rbenv-gemset" do
+    repository "git://github.com/jamis/rbenv-gemset.git"
+    reference "master"
+    user user
+    group user
+    destination "#{path}/.rbenv/plugins/rbenv-gemset"
     action :sync
   end
   

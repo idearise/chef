@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: postgresql
+# Cookbook Name:: screen
 # Recipe:: default
 #
 # Copyright 2012, Stephen Paul Suarez
@@ -16,23 +16,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-package "postgresql"
-package 'postgresql-server'
-package "postgresql-devel"
-
-#service postgresql initdb
-script "initialize postgres" do
-  interpreter "bash"
-  user 'root'
-  code <<-BASH
-  service postgresql initdb
-  touch /etc/chef/env/initialized_postgresql
-  BASH
-  not_if "test -f /etc/chef/env/initialized_postgresql"
-end
-
-service "postgresql" do
-  action [:enable, :start]
-end
-
-#we'll probably put postgres configuration here instead
+package 'screen'
