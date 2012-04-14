@@ -74,7 +74,7 @@ template "/etc/sudoers" do
   #not_if { defined?(node[:users][name][:preserve_keys]) ? node[:users][name][:preserve_keys] : false }
 end
 
-mysql_bin = '/usr/local/mysql'#[node[:mysql_cluster][:target], 'bin'].join('/')
+mysql_bin = '/usr/local/mysql/bin'#[node[:mysql_cluster][:target], 'bin'].join('/')
 paths = {}
 if File.exist?(mysql_bin)
   paths.update({:mysql_cluster => mysql_bin})
@@ -124,13 +124,14 @@ template "/root/.gemrc" do
   #not_if "test -f /root/.gemrc"
 end
 
+=begin
 cookbook_file "/etc/ssh/sshd_config" do
   source "sshd_config"
   mode "700"
   not_if "test -f /etc/chef/env/sshd_config_secured"
 end
 
-service "ssh" do
+service "sshd" do
   action :restart
   not_if "test -f /etc/chef/env/sshd_config_secured"
 end
@@ -141,3 +142,4 @@ execute "flag the restart of ssh after sshd_config reconfiguration" do
   creates "/etc/chef/env/sshd_config_secured"
   action :run
 end
+=end

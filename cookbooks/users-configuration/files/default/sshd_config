@@ -45,8 +45,8 @@ PermitRootLogin no
 #MaxSessions 10
 
 #RSAAuthentication yes
-#PubkeyAuthentication yes
-#AuthorizedKeysFile	.ssh/authorized_keys
+PubkeyAuthentication yes
+AuthorizedKeysFile	.ssh/authorized_keys
 #AuthorizedKeysCommand none
 #AuthorizedKeysCommandRunAs nobody
 

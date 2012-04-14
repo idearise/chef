@@ -1,0 +1,19 @@
+#!/bin/sh
+# chkconfig: - 80 12
+# description:  The memcached daemon is a network memory cache service.
+# processname: memcached
+BIN=<%= `which memcached`%>
+USER=<%= @user %>
+CON=<%= @con %>
+THREADS=<%= @threads%>
+MEM=<%= @mem %>
+
+$BIN -d -m $MEM -l 127.0.0.1 -p 2010 -c $CON -t $THREADS -u $USER -P /var/run/memcached.pid
+
+case "$1" in
+start)
+$BIN -d -m $MEM -l 127.0.0.1 -p 2010 -c $CON -t $THREADS -u $USER -P /var/run/memcached.pid
+;;
+stop) killall $BIN
+;;
+esac
