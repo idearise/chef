@@ -127,7 +127,7 @@ template "/root/.gemrc" do
   #not_if "test -f /root/.gemrc"
 end
 
-=begin
+
 cookbook_file "/etc/ssh/sshd_config" do
   source "sshd_config"
   mode "700"
@@ -140,9 +140,7 @@ service "sshd" do
 end
 
 execute "flag the restart of ssh after sshd_config reconfiguration" do
-  cwd '/etc/chef/env'
-  command "touch sshd_config_secured"
+  command "touch /etc/chef/env/sshd_config_secured"
   creates "/etc/chef/env/sshd_config_secured"
   action :run
 end
-=end

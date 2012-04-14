@@ -16,27 +16,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-git "rbenv" do
-  repository "git://github.com/sstephenson/rbenv.git"
-  reference "master"
-  destination '/home/deploy/.rbenv'
-  user "deploy"
-  group 'deploy'
-  action :sync
-end
+{
+  'root' => '/root',
+  'deploy' => '/home/deploy'
+}.each do |user, path|
+  git "rbenv" do
+    repository "git://github.com/sstephenson/rbenv.git"
+    reference "master"
+    destination "#{path}/.rbenv"
+    user user
+    group user
+    action :sync
+  end
 
-#echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
-directory "/home/deploy/.rbenv/plugins" do
-  owner 'deploy'
-  group 'deploy'
-  recursive true
-end
+  #echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
+  directory "#{path}/.rbenv/plugins" do
+    owner user
+    group user
+    recursive true
+  end
 
-git "ruby-build" do
-  repository "git://github.com/sstephenson/ruby-build.git"
-  reference "master"
-  user "deploy"
-  group 'deploy'
-  destination '/home/deploy/.rbenv/plugins/ruby-build'
-  action :sync
+  git "ruby-build" do
+    repository "git://github.com/sstephenson/ruby-build.git"
+    reference "master"
+    user user
+    group user
+    destination "#{path}/.rbenv/plugins/ruby-build"
+    action :sync
+  end
+  
 end
