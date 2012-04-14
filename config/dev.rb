@@ -58,4 +58,4 @@ end
 task :upload => ['upload:all']
 
 desc "the task to call after doing the bootstrap"
-task :setup_after_bootstrap => ['upload','linode:assign_role', 'linode:chef_client']
+task :setup_after_bootstrap => ['upload', 'linode:assign_role', 'linode:chef_client']

@@ -63,10 +63,6 @@ execute "tar" do
 end
 
 p = [src_dir, base, 'storage/sphinx'].join('/')
-directory p do
-  recursive true
-  not_if "test -d #{p}"
-end
 
 execute "cp msyqlse engine sources to msyql storage plugin directory" do
   #cp -R -p $SPHX/mysqlse $MYSQL/storage/sphinx
@@ -74,7 +70,8 @@ execute "cp msyqlse engine sources to msyql storage plugin directory" do
   not_if { Dir["#{p}/*"].size > 0 }
 end
 
-#apply the patch for 2.0.4
+=begin
+#apply the patch for 2.0.4 -- apparently, this is still a work in progress
 #ref: http://sphinxsearch.com/forum/view.html?id=8982
 #ref: http://sphinxsearch.com/bugs/view.php?id=1090
 cookbook_file "#{p}/snippets_udf.cc.patch" do
@@ -95,24 +92,31 @@ script "execute snippets_udf patch" do
   BASH
   not_if "test -f /etc/chef/env/sphinx_snippets_udf_patched"
 end
+=end
 
 script "install mysql source code" do
   interpreter "bash"
   user "root"
   cwd src_dir + "/" + base
+  code <<-BASH
+  sh BUILD/autorun.sh
+  sudo ./configure --with-extra-charsets=complex \
+  --with-charset=utf8 \
+  --with-collation=utf8_general_ci \
+  --enable-thread-safe-client \
+  --enable-local-infile \
+  --with-plugins=sphinx \
+  --with-innodb \
+  --prefix=/usr/local/mysql
+  make
+  make install
+  BASH
 =begin
-cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
--DMYSQL_UNIX_ADDR=/tmp/mysql.sock \
--DDEFAULT_CHARSET=utf8 \
--DDEFAULT_COLLATION=utf8_general_ci \
--DWITH_EXTRA_CHARSETS:STRING=utf8 \
--DWITH_MYISAM_STORAGE_ENGINE=1 \
--DWITH_INNOBASE_STORAGE_ENGINE=1 \
--DWITH_MEMORY_STORAGE_ENGINE=1 \
--DWITH_READLINE=1 \
--DENABLED_LOCAL_INFILE=1 \
--DWITH_SPHINX_STORAGE_ENGINE=1 -DWITH_EMBEDDED_SERVER=1
+cmake . -DWITH_SPHINX_STORAGE_ENGINE=1
+-DCMAKE_INSTALL_PREFIX=#{target} -DINSTALL_LAYOUT=STANDALONE -DENABLED_PROFILING=ON
+-DMYSQL_MAINTAINER_MODE=OFF -DWITH_DEBUG=OFF
 =end
+=begin
   code <<-BASH
   sh BUILD/autorun.sh
   cmake . -DCMAKE_INSTALL_PREFIX=#{target} \
@@ -127,7 +131,7 @@ cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
   -DENABLED_LOCAL_INFILE=1 \
   -DWITH_SPHINX_STORAGE_ENGINE=1 -DWITH_EMBEDDED_SERVER=1
   make install
-  
   BASH
+=end
   not_if { File.exist?(target) }
 end

@@ -20,7 +20,7 @@
 
 
 gem_package "ruby-shadow"
-#require_recipe "mysql_cluster"
+#require_recipe "mysql"
 item = data_bag_item 'users', 'deploy'
 
 # for each admin in the data bag, make a user resource
@@ -74,10 +74,10 @@ template "/etc/sudoers" do
   #not_if { defined?(node[:users][name][:preserve_keys]) ? node[:users][name][:preserve_keys] : false }
 end
 
-mysql_bin = '/usr/local/mysql/bin'#[node[:mysql_cluster][:target], 'bin'].join('/')
+mysql_bin = '/usr/local/mysql/bin'#[node[:mysql][:target], 'bin'].join('/')
 paths = {}
 if File.exist?(mysql_bin)
-  paths.update({:mysql_cluster => mysql_bin})
+  paths.update({:mysql => mysql_bin})
 end
 
 template "/root/.bash_profile" do

@@ -44,7 +44,8 @@ script "install mysql cluster source code" do
   user "root"
   cwd src_dir + "/" + base
   code <<-BASH
-  cmake .
+  sudo sh BUILD/autorun.sh
+  ./configure
   make
   make install
   BASH

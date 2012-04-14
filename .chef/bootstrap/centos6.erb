@@ -19,6 +19,9 @@ if [ ! -f /usr/bin/chef-client ]; then
   wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://packages.sw.be/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
   rpm -ivh rpmforge-release-0.5.2-2.el5.rf.*.rpm
 
+  #throw in the development kitchen sink
+  yum groupinstall "Development Tools" -y
+
   #prepare "Development Tools" and ruby deps
   <% basic_deps = %w[gcc gcc-c++ automake autoconf make] %>
   <% ruby_deps = %w[zlib zlib-devel ncurses ncurses-devel readline readline-devel openssl-devel libxml2 libxml2-devel libxslt libxslt-devel] %>
