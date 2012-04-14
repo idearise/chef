@@ -2,7 +2,7 @@ name "dev_env"
 description "contains unsorted stuff for now."
 
 run_list 'recipe[git]',
-  'recipe[mysql::mysqlse]',
+  'recipe[mysql::mysqlse]', 'recipe[mysql-configuration]',
   'recipe[sphinx]',
   'recipe[memcached]','recipe[memcached-configuration]',
   'recipe[node.js]',

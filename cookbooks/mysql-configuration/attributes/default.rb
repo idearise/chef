@@ -1,0 +1,1 @@
+default["mysql-configuration"][:root_path] = '/var/lib/mysql'

@@ -46,5 +46,5 @@ script "install sphinx source code" do
   make
   make install
   BASH
-  not_if { !!system('which sphinx')}
+  not_if { !!system('which search && which indexer')}
 end
