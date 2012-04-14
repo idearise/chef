@@ -10,53 +10,53 @@ assign_role = %(knife node run_list add #{dev_env} "role[dev_env]")
 bootstrap = %(knife bootstrap #{dev_env} -d centos6)
 
 namespace :linode do
+  task :fqdn do
+    puts dev_env
+  end
   
   desc "login to #{dev_env}"
   task :login do
     system("ssh root@#{dev_env}")
   end
   
-  desc "output the bootstrap and assign the role commands for #{dev_env} in stdout; `rake linode:setup|bash` to use "
-  task :setup do
-    puts [bootsrap, assign_role].join(" && ")
-  end
-  
-  task :bootstrap do
-    puts bootstrap
-  end
-  
   task :assign_role do
     system(assign_role)
   end
   
-  
-  namespace :upload do
-    task :cookbook do
-      cookbook = ENV['COOKBOOK'] || '-a'
-      system('knife cookbook upload ' + cookbook)
-    end
-    
-    task :role do
-      role = ENV['ROLE'] || '*'
-      system('knife role from file roles/' + role + '.rb')
-    end
-    
-    task :data_bag do
-      #create the databag(even if it's already created and then upload the file)
-      Dir[File.join(root, 'data_bags') + '/*'].each do |potential_bag|
-        next unless File.directory?(potential_bag)
-        bag = File.basename(potential_bag)
-        system('knife data bag create ' + bag) rescue nil
-        Dir[File.join(root, 'data_bags') + '/' + bag + '/*.json'].each do |item|
-          system('knife data bag from file ' + bag + " #{File.basename(item)}")
-        end
-      end
-    end
-    
-    task :all => [:role, :cookbook, :data_bag]
+  task :chef_client do
+    system("cap chef:client")
   end
-  
-  task :upload => ['linode:upload:all']
   
   
 end
+namespace :upload do
+  task :cookbook do
+    cookbook = ENV['COOKBOOK'] || '-a'
+    system('knife cookbook upload ' + cookbook)
+  end
+  
+  task :role do
+    role = ENV['ROLE'] || '*'
+    system('knife role from file roles/' + role + '.rb')
+  end
+  
+  task :data_bag do
+    #create the databag(even if it's already created and then upload the file)
+    Dir[File.join(root, 'data_bags') + '/*'].each do |potential_bag|
+      next unless File.directory?(potential_bag)
+      bag = File.basename(potential_bag)
+      system('knife data bag create ' + bag) rescue nil
+      Dir[File.join(root, 'data_bags') + '/' + bag + '/*.json'].each do |item|
+        system('knife data bag from file ' + bag + " #{File.basename(item)}")
+      end
+    end
+  end
+  
+  task :all => [:role, :cookbook, :data_bag]
+  
+end
+
+task :upload => ['upload:all']
+
+desc "the task to call after doing the bootstrap"
+task :setup_after_bootstrap => ['linode:assign_role', 'upload', 'linode:chef_client']
