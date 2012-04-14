@@ -1,2 +1,5 @@
 .rake_test_cache
 
+id_rsa
+id_rsa.pub
+

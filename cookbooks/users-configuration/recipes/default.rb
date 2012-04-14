@@ -48,7 +48,10 @@ group "admins" do
   members [item['id']]
 end
 
-directory "/home/#{item['id']}/.ssh"
+directory "/home/#{item['id']}/.ssh" do
+  owner item['id']
+  group item['id']
+end
 
 template "/home/#{item['id']}/.ssh/authorized_keys" do
   source "authorized_keys.erb"

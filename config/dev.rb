@@ -28,6 +28,19 @@ namespace :linode do
     system("cap chef:client")
   end
   
+  namespace :upload do
+    task :keys do
+      #upload keys for each user!
+      %w[id_rsa id_rsa.pub].each do |f|
+        if File.exist?(root + '/' + f)
+          system("scp #{root}/#{f} root@#{dev_env}:/root/.ssh/" + f)
+          system("scp #{root}/#{f} deploy@#{dev_env}:/home/deploy/.ssh/" + f)
+        end
+      end
+
+    end
+  end
+  
 end
 namespace :upload do
   task :cookbook do
@@ -52,7 +65,7 @@ namespace :upload do
     end
   end
   
-  task :all => [:role, :cookbook, :data_bag]
+  task :all => [:role, :cookbook, :data_bag, 'linode:upload:keys']
   
 end
 
