@@ -27,7 +27,6 @@ namespace :linode do
     system("cap chef:client")
   end
   
-  
 end
 namespace :upload do
   task :cookbook do
@@ -59,4 +58,4 @@ end
 task :upload => ['upload:all']
 
 desc "the task to call after doing the bootstrap"
-task :setup_after_bootstrap => ['linode:assign_role', 'upload', 'linode:chef_client']
+task :setup_after_bootstrap => ['upload','linode:assign_role', 'linode:chef_client']
