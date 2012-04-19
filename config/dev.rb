@@ -7,7 +7,6 @@ machine_info = machines_info[machines_info['alias']['dev_env']]
 dev_env = machine_info['fqdn']
 
 assign_role = %(knife node run_list add #{dev_env} "role[dev_env]")
-bootstrap = %(knife bootstrap #{dev_env} -d centos6)
 
 namespace :linode do
   task :fqdn do
@@ -16,7 +15,7 @@ namespace :linode do
   
   desc "login to #{dev_env}"
   task :login do
-    user = ENV['user'] || 'root'
+    user = ENV['user'] || 'deploy'
     system("ssh #{user}@#{dev_env}")
   end
   

@@ -36,3 +36,8 @@ service "postgresql" do
 end
 
 #we'll probably put postgres configuration here instead
+
+cookbook_file "/var/lib/pgsql/data/pg_hba.conf" do
+  source "pg_hba.conf" # this is the value that would be inferred from the path parameter
+  mode "0644"
+end

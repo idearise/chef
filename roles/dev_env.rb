@@ -3,6 +3,7 @@ description "contains unsorted stuff for now."
 
 run_list *[
   'recipe[screen]',
+  'recipe[java]',
   'recipe[git]',
   'recipe[mysql::mysqlse]', 'recipe[mysql-configuration]',
   'recipe[sphinx]',
