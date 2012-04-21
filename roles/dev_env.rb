@@ -5,6 +5,7 @@ run_list *[
   'recipe[screen]',
   'recipe[java]',
   'recipe[git]',
+  'recipe[tmux]',
   'recipe[mysql::mysqlse]', 'recipe[mysql-configuration]',
   'recipe[sphinx]',
   'recipe[memcached]','recipe[memcached-configuration]',
