@@ -2,7 +2,7 @@
 # Cookbook Name:: postgresql
 # Recipe:: default
 #
-# Copyright 2012, Stephen Paul Suarez
+# Copyright 2009, Opscode, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,28 +16,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-package "postgresql"
-package 'postgresql-server'
-package "postgresql-devel"
 
-#service postgresql initdb
-script "initialize postgres" do
-  interpreter "bash"
-  user 'root'
-  code <<-BASH
-  service postgresql initdb
-  touch /etc/chef/env/initialized_postgresql
-  BASH
-  not_if "test -f /etc/chef/env/initialized_postgresql"
-end
-
-
-cookbook_file "/var/lib/pgsql/data/pg_hba.conf" do
-  source "pg_hba.conf" # this is the value that would be inferred from the path parameter
-  mode "0644"
-end
-
-service "postgresql" do
-  action [:enable, :start]
-end
-
+include_recipe "postgresql::client"
