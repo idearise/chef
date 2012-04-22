@@ -1,0 +1,13 @@
+{
+  "id": "sortary",
+  "alias": {
+    "sortary-00": "li440-215.members.linode.com"
+  },
+  "li440-215.members.linode.com": {
+    "fqdn": "li440-215.members.linode.com",
+    "public_ip": "50.116.54.215",
+    "private_ip": "",
+    "subnet_mask": "255.255.255.0",
+    "default_gateway": "50.116.54.1"
+  }
+}

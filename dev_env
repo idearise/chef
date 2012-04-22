@@ -1,4 +1,0 @@
-#!/bin/bash
-#an alias to rake linode:fqdn
-#so that i can just: knife bootstrap $(./dev_env) -d centos6
-rake linode:fqdn

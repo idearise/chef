@@ -1,0 +1,103 @@
+bash -c '
+
+# export rbenv to path
+export RBENV_ROOT=/usr/local/rbenv
+export PATH=/usr/local/rbenv/shims:/usr/local/rbenv/bin:$PATH
+
+<%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+
+if [ ! -d /usr/local/rbenv ]; then
+
+# Update, upgrade and install development tools:
+apt-get update
+apt-get -y install build-essential git-core curl libssl-dev \
+                   libreadline6 libreadline6-dev \
+                   zlib1g zlib1g-dev \
+                   libmysqlclient-dev \
+                   libcurl4-openssl-dev \
+                   libxslt-dev libxml2-dev
+
+# Install rbenv
+git clone git://github.com/sstephenson/rbenv.git /usr/local/rbenv
+
+# Add rbenv to the path:
+curl -s https://raw.github.com/gist/2251684/35b1d4118199a4089c8e0ce4bba49bc7b9c583a4/rbenv.sh > /etc/profile.d/rbenv.sh
+
+chmod +x /etc/profile.d/rbenv.sh
+source   /etc/profile.d/rbenv.sh
+
+# Install ruby-build:
+pushd /tmp
+  git clone git://github.com/sstephenson/ruby-build.git
+  cd ruby-build
+  ./install.sh
+popd
+
+# Install Ruby 1.9.3-p125:
+rbenv install  1.9.3-p125
+rbenv global   1.9.3-p125
+
+# Rehash:
+rbenv rehash
+
+# Production installing gems skipping ri and rdoc
+cat << EOF > /root/.gemrc
+---
+:sources:
+- http://gems.rubyforge.org
+- http://gems.github.com
+gem: --no-ri --no-rdoc
+EOF
+
+cat << EOF > /usr/local/bin/rbenv-chef-client
+#!/bin/bash
+export RBENV_ROOT=/usr/local/rbenv
+export PATH=/usr/local/rbenv/shims:/usr/local/rbenv/bin:$PATH
+chef-client
+rbenv rehash
+EOF
+chmod +x /usr/local/bin/rbenv-chef-client
+
+fi
+
+gem install ohai --no-rdoc --no-ri
+gem install chef --no-rdoc --no-ri <%= bootstrap_version_string %>
+
+# Rehash:
+rbenv rehash
+
+mkdir -p /etc/chef
+
+(
+cat <<'EOP'
+<%= validation_key %>
+EOP
+) > /tmp/validation.pem
+awk NF /tmp/validation.pem > /etc/chef/validation.pem
+rm /tmp/validation.pem
+
+<% if @chef_config[:encrypted_data_bag_secret] -%>
+(
+cat <<'EOP'
+<%= encrypted_data_bag_secret %>
+EOP
+) > /tmp/encrypted_data_bag_secret
+awk NF /tmp/encrypted_data_bag_secret > /etc/chef/encrypted_data_bag_secret
+rm /tmp/encrypted_data_bag_secret
+<% end -%>
+
+(
+cat <<'EOP'
+<%= config_content %>
+EOP
+) > /etc/chef/client.rb
+
+(
+cat <<'EOP'
+<%= { "run_list" => @run_list }.to_json %>
+EOP
+) > /etc/chef/first-boot.json
+
+/usr/local/rbenv/shims/chef-client -j /etc/chef/first-boot.json -E _default
+
+'

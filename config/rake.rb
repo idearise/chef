@@ -6,7 +6,7 @@
 ###
 
 # The company name - used for SSL certificates, and in srvious other places
-COMPANY_NAME = "Precise"
+COMPANY_NAME = "Idearise LLC"
 
 # The Country Name to use for SSL Certificates
 SSL_COUNTRY_NAME = "US"
@@ -21,7 +21,7 @@ SSL_LOCALITY_NAME = "Locality"
 SSL_ORGANIZATIONAL_UNIT_NAME = "Dev"
 
 # The SSL contact email address
-SSL_EMAIL_ADDRESS = "devpopol@gmail.com"
+SSL_EMAIL_ADDRESS = "hello@idearise.com"
 
 # License for new Cookbooks
 # Can be :apachev2 or :none
